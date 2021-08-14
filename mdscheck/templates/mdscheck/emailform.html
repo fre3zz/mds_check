@@ -1,0 +1,9 @@
+{% extends 'mdscheck/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-3 mt-4">
+            {% crispy form %}
+        </div>
+    </div>
+{% endblock %}

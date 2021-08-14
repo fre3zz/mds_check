@@ -1,0 +1,10 @@
+{% extends 'mdscheck/base.html' %}
+{% block content %}
+    <div class="mt-4 row justify-content-center" style="align-content: center">
+        <a class="btn btn-success col-2" href="{% url 'mds_check:email_form'%}" role="button">Ввести e-mail</a>
+        <div class="col-12"><p style="text-align: center; margin-top: 20px"> ИЛИ </p></div>
+
+        <a class="btn btn-success col-2" href="{% url 'mds_check:index'%}" role="button">Вернуться на главную</a>
+
+    </div>
+{% endblock %}
