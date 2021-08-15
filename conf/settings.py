@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
-
-from google.oauth2 import service_account
 from pathlib import Path
+
+import django_heroku
+from google.oauth2 import service_account
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -165,7 +166,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Google
 
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    "E:\\python\\python projects\\django\\mds-project-322119-81e1e7496195.json"
+    "google-credentials.json"
 )
 
 # Forms
@@ -176,3 +177,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # new!
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# for heroku deploy
+django_heroku.settings(locals())
