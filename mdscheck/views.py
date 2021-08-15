@@ -2,12 +2,12 @@ import os
 import random
 
 from django.shortcuts import render, redirect, get_object_or_404
-
 # Create your views here.
 from django.urls import reverse
 from django.views import View
+
 from .forms import EmailForm, PatternCheck
-from .models import Images, PATTERNS, MdsModel, Decision
+from .models import Images, MdsModel, Decision
 
 
 class IndexView(View):

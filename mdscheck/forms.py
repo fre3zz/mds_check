@@ -25,7 +25,18 @@ class PatternCheck(forms.Form):
         self.helper.label_class = 'ml-4'
 
     case_id = forms.IntegerField(widget=forms.HiddenInput())
-    is_normal_cd13cd11b = forms.ChoiceField(choices=DECISIONS[:3], widget=forms.RadioSelect, label="Нормальный ли этот паттерн?")
-    is_normal_cd13cd16 = forms.ChoiceField(choices=DECISIONS, widget=forms.RadioSelect, label="Нормальный ли этот паттерн?")
-    is_normal_cd11bcd16 = forms.ChoiceField(choices=DECISIONS, widget=forms.RadioSelect, label="Нормальный ли этот паттерн?")
-
+    is_normal_cd13cd11b = forms.ChoiceField(
+        choices=DECISIONS[:3],
+        widget=forms.RadioSelect,
+        label="Нормальный ли этот паттерн?"
+    )
+    is_normal_cd13cd16 = forms.ChoiceField(
+        choices=DECISIONS,
+        widget=forms.RadioSelect,
+        label="Нормальный ли этот паттерн?"
+    )
+    is_normal_cd11bcd16 = forms.ChoiceField(
+        choices=DECISIONS,
+        widget=forms.RadioSelect,
+        label="Нормальный ли этот паттерн?"
+    )

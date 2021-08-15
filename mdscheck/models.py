@@ -60,7 +60,5 @@ class Decision(models.Model):
     responder_email = models.EmailField(null=False, default="")
     posted_date = models.DateTimeField(auto_now_add=True)
 
-
-
     def __str__(self):
         return f"{self.decision} decision on {self.image}"

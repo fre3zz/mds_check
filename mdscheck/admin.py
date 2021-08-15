@@ -6,8 +6,9 @@ from PIL import Image
 from django.contrib import admin
 from django.core.files.storage import default_storage
 from fitz import fitz
-from google.cloud import storage
+
 from .models import MdsModel, Images, Decision
+
 # Register your models here.
 
 
