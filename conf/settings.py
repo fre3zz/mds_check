@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
 import django_heroku
 from google.oauth2 import service_account
 
@@ -114,7 +115,8 @@ DATABASES = {
     }
 
 }
-
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -172,7 +174,7 @@ GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Static
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # new!
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # new!
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
