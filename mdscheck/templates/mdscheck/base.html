@@ -12,9 +12,12 @@
         <a class="navbar-brand m-2 font-weight-bold" href="{% url 'mds_check:index' %}">Главная</a>
 
       <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-          <ul class="navbar-nav col-11">
-
+          <ul class="navbar-nav col-11 ">
+              <li class="nav-item">
+                  <a class="nav-link mx-5 font-weight-bold" href="{% url 'mds_check:search' %}">Поиск</a>
+              </li>
           </ul>
+
           <ul class="navbar-nav col-1 justify-content-end">
               <li class="nav-item active">
                 {% if request.session.email is not Null %}

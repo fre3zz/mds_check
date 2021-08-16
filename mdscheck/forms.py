@@ -1,6 +1,7 @@
 from crispy_forms import helper
 from crispy_forms.layout import Submit
 from django import forms
+from django.core.validators import MinValueValidator
 
 from .models import RESPONDER, DECISIONS
 
@@ -40,3 +41,12 @@ class PatternCheck(forms.Form):
         widget=forms.RadioSelect,
         label="Нормальный ли этот паттерн?"
     )
+
+
+class SearchForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = helper.FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Submit', css_class='btn btn-success btn-block mt-4'))
+    case_number = forms.IntegerField(validators=[MinValueValidator(1)])

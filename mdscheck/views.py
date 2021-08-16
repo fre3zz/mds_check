@@ -1,12 +1,13 @@
 import os
 import random
 
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from django.urls import reverse
 from django.views import View
 
-from .forms import EmailForm, PatternCheck
+from .forms import EmailForm, PatternCheck, SearchForm
 from .models import Images, MdsModel, Decision
 
 
@@ -49,7 +50,7 @@ def logoutview(request):
     return render(request, template_name='mdscheck/logout.html')
 
 
-class MdsCaseView(View):
+class RandomMdsCaseView(View):
     template_name = 'mdscheck/mdscase.html'
 
     def get(self, request):
@@ -111,4 +112,32 @@ class MdsCaseView(View):
                 decision.responder_email = request.session['email']
                 decision.save()
 
-        return redirect(reverse('mds_check:mds_case'))
+        return redirect(reverse('mds_check:random_mds_case'))
+
+
+class SearchView(View):
+    template = 'mdscheck/casesearch.html'
+    def get(self, request):
+        search_form = SearchForm(initial={'case_number': 1})
+        return render(request, template_name=self.template, context={'search_form': search_form})
+
+    def post(self, request):
+        search_form = SearchForm(request.POST)
+        context = dict()
+        if search_form.is_valid():
+            number = search_form.cleaned_data['case_number']
+            try:
+                print(number)
+                case = MdsModel.objects.get(number=number)
+                return redirect(reverse('mds_check:mds_case', kwargs={'case_pk': int(case.id)}))
+            except MdsModel.DoesNotExist:
+                context = {'cases': MdsModel.objects.order_by()}
+        context['search_form'] = search_form
+        return render(request, template_name=self.template, context=context)
+
+
+
+
+class MdsCaseView(View):
+    def get(self, request, case_pk):
+        return HttpResponse("!!!")

@@ -36,6 +36,7 @@ class MdsModel(models.Model):
 
     pdf_file = models.FileField(upload_to='pdf', validators=[validate_file_extension], unique=True)
     is_donor = models.BooleanField(default=False, choices=IS_DONOR)
+    number = models.IntegerField(default=0)
 
     def __str__(self):
         return self.pdf_file.name

@@ -1,0 +1,22 @@
+{% extends 'mdscheck/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-3 mt-4">
+            {% crispy search_form %}
+        </div>
+    </div>
+    {% if cases %}
+        <div class="container">
+    <div class="row justify-content-center">
+        <div class="mt-4">
+            <h1>Есть такие кейсы</h1>
+            {% for case in cases %}
+                <a href="{% url 'mds_check:mds_case' case.id %}" class="col-1">{{ case.number }}</a>
+            {% endfor %}
+        </div>
+    </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

@@ -62,6 +62,7 @@ class MdsModelAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
 
+        obj.number = obj.pdf_file.name.split("-")[0]
         super(MdsModelAdmin, self).save_model(request, obj, form, change)
 
         file_name = obj.pdf_file.name
