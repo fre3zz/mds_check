@@ -36,7 +36,7 @@ for row in range(2, 250):
         data_dict[number] = [cd13_cd11b, cd16_cd13, cd16_cd11b]
 
 mds_cases = MdsModel.objects.all()
-print(mds_cases)
+
 for mds_case in mds_cases:
     if mds_case.number in data_dict.keys():
         images = mds_case.images.all()
@@ -44,9 +44,11 @@ for mds_case in mds_cases:
             results = data_dict[mds_case.number]
             # выбор по индексу - image.number на один опережает индекс в словаре data
             decision = results[int(image.name)-1]
-            new_decision = Decision()
+            new_decision, created = Decision.objects.get_or_create(
+                image=image
+            )
+            print(new_decision)
             new_decision.decision = decision
-            new_decision.image = image
             new_decision.is_expert = True
             new_decision.responder = 'exp'
             new_decision.responder_email = 'k0jl9ih@yandex.ru'
