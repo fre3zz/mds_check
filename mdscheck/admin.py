@@ -52,7 +52,6 @@ def transform_to_images(pdf_file_url) -> [dict]:
         file.close()
         images_dict[number] = f"{GCS_URL}{pattern_pic_url}"
 
-    print(images_dict)
     return images_dict
 
 

@@ -4,7 +4,7 @@ import random
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
 
 from .forms import EmailForm, PatternCheck, SearchForm
@@ -117,6 +117,7 @@ class RandomMdsCaseView(View):
 
 class SearchView(View):
     template = 'mdscheck/casesearch.html'
+
     def get(self, request):
         search_form = SearchForm(initial={'case_number': 1})
         return render(request, template_name=self.template, context={'search_form': search_form})
@@ -130,7 +131,7 @@ class SearchView(View):
                 print(number)
                 case = MdsModel.objects.get(number=number)
                 return redirect(reverse('mds_check:mds_case', kwargs={'case_pk': int(case.id)}))
-            except MdsModel.DoesNotExist:
+            except (MdsModel.DoesNotExist, MdsModel.MultipleObjectsReturned):
                 context = {'cases': MdsModel.objects.order_by()}
         context['search_form'] = search_form
         return render(request, template_name=self.template, context=context)
@@ -139,5 +140,6 @@ class SearchView(View):
 
 
 class MdsCaseView(View):
+
     def get(self, request, case_pk):
         return HttpResponse("!!!")
