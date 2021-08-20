@@ -4,3 +4,14 @@
         <a class="btn btn-success btn-lg" href="{% url 'mds_check:random_mds_case'%}" role="button">Начать</a>
     </div>
 {% endblock %}
+{% block comments %}
+    <div class="overflow-auto m-2 border border-info rounded", style="height: 90vh">
+    <div class="alert alert-success m-2" role="alert">
+        <p class="m-0">{{ decisions.posted_date }}</p>
+        <p class="m-0">{{ decisions.responder_email }}</p>
+        <p class="m-0">{{ decisions.get_decision_display }}</p>
+        <p class="m-0">{{ decisions.image.get_name_display }} of {{ decisions.image.case }}</p>
+
+    </div>
+    </div>
+{% endblock %}

@@ -2,10 +2,11 @@ import os
 
 from openpyxl import load_workbook
 
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
+
 import django
 django.setup()
+
 from mdscheck.models import MdsModel, Decision
 
 

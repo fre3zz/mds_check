@@ -12,9 +12,11 @@ from .models import Images, MdsModel, Decision
 
 
 class IndexView(View):
-    # Вью для главной страницы, она статичная, поэтому ничего в контекст не передаем
+
     def get(self, request):
-        return render(request, template_name='mdscheck/index.html')
+        decisions = Decision.objects.all().first()
+        context = {'decisions': decisions}
+        return render(request, template_name='mdscheck/index.html', context=context)
 
 
 class EmailEnterView(View):

@@ -4,11 +4,11 @@ from .validators import validate_file_extension
 
 # Create your models here.
 # 3 варианта анализируемых паттернов
-PATTERNS = (
-        (1, 'CD13_vs_CD11b'),
-        (2, 'CD13_vs_CD16'),
-        (3, 'CD11b_vs_CD16'),
-    )
+PATTERNS = [
+        ("1", 'CD13_vs_CD11b'),
+        ("2", 'CD13_vs_CD16'),
+        ("3", 'CD11b_vs_CD16'),
+    ]
 # Донор или нет для выбора в форме
 IS_DONOR = (
         (True, 'donor'),
