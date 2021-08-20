@@ -14,7 +14,7 @@ from .models import Images, MdsModel, Decision
 class IndexView(View):
 
     def get(self, request):
-        decisions = Decision.objects.all().first()
+        decisions = Decision.objects.all().order_by('posted_date')[:30]
         context = {'decisions': decisions}
         return render(request, template_name='mdscheck/index.html', context=context)
 
@@ -134,7 +134,7 @@ class SearchView(View):
                 case = MdsModel.objects.get(number=number)
                 return redirect(reverse('mds_check:mds_case', kwargs={'case_pk': int(case.id)}))
             except (MdsModel.DoesNotExist, MdsModel.MultipleObjectsReturned):
-                context = {'cases': MdsModel.objects.order_by()}
+                context = {'cases': MdsModel.objects.all().order_by('number')}
         context['search_form'] = search_form
         return render(request, template_name=self.template, context=context)
 

@@ -38,6 +38,9 @@ class MdsModel(models.Model):
     is_donor = models.BooleanField(default=False, choices=IS_DONOR)
     number = models.IntegerField(default=0)
 
+    class Meta:
+        ordering = ['-number']
+
     def __str__(self):
         return self.pdf_file.name
 
