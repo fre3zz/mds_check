@@ -145,3 +145,7 @@ class MdsCaseView(View):
 
     def get(self, request, case_pk):
         return HttpResponse("!!!")
+
+
+def aboutview(request):
+    return render(request, template_name='mdscheck/about.html')

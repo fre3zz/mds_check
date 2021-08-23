@@ -1,0 +1,27 @@
+{% extends 'mdscheck/base.html' %}
+{% block content %}
+    <div class="container">
+
+    <h1 align="center">Что нужно сделать?</h1>
+    <h4 align="center"> Нужно оценить схожесть картинок друг с другом. Например, эти картинки очень похожи:</h4>
+        <div class="row justify-content-center">
+            <img class="col-5 m-2" src="static/pictures/pictures_300_CD11b_vs_CD16.jpeg" >
+            <img class="col-5" src="static/pictures/pictures_301_CD11b_vs_CD16.jpeg">
+        </div>
+    <h4 align="center"> А эти - непохожи:</h4>
+        <div class="row justify-content-center">
+            <img class="col-5 m-2" src="static/pictures/pictures_302_CD13_vs_CD11b.jpeg" >
+            <img class="col-5 m-2" src="static/pictures/44_CD13_vs_CD11b.jpeg">
+        </div>
+        <h4 align="center">Но что это вообще за картинки?</h4>
+        <h5 >Каждая точка на графике - это клетка, которая была проанализирована с помощью проточного цитометра. Оси графиков отражают количество определенного белка на поверхности клетки. Чем больше белка на поверхности клетки, тем больше значение на оси.
+        На поверхности различных клеток в организме экспрессируются десятки и сотни разных белков. К счастью сейчас нас интересует экспрессия лишь трех белков - CD11b, CD13 и CD16 на поверхности гранулоцитов. Гранулоциты - это подтип белых кровяных телец - лейкоцитов, к тому же наиболее многочисленный.
+            Все клетки крови происходят из стволовой клетки, способной к дифференцировке в великое множество различных клеток и самовоспроизведению. Стволовые клетки живут в костном мозге, там же и гранулоциты проходят различные стадии созревания, что
+            ассоциируется в частности с изменением на их поверхности экспрессии белков CD11b, CD13 и CD16. Схематически это показано на рисунке ниже:
+        </h5>
+        <div class="row justify-content-center">
+            <img class="col-10 m-2" src="static/pictures/MDS maturation.jpg">
+        </div>
+    <a class="btn btn-success btn-lg" href="{% url 'mds_check:random_mds_case'%}" role="button">Начать</a>
+    </div>
+{% endblock %}
