@@ -134,7 +134,9 @@ class SearchView(View):
                 case = MdsModel.objects.get(number=number)
                 return redirect(reverse('mds_check:mds_case', kwargs={'case_pk': int(case.id)}))
             except (MdsModel.DoesNotExist, MdsModel.MultipleObjectsReturned):
-                context = {'cases': MdsModel.objects.all().order_by('number')}
+                cases = MdsModel.objects.all().order_by('number')
+                context = {'cases': cases}
+
         context['search_form'] = search_form
         return render(request, template_name=self.template, context=context)
 

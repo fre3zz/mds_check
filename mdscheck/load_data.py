@@ -46,11 +46,11 @@ for mds_case in mds_cases:
             # выбор по индексу - image.number на один опережает индекс в словаре data
             decision = results[int(image.name)-1]
             new_decision, created = Decision.objects.get_or_create(
-                image=image
+                image=image,
+                is_expert=True
             )
             print(new_decision)
             new_decision.decision = decision
-            new_decision.is_expert = True
             new_decision.responder = 'exp'
             new_decision.responder_email = 'k0jl9ih@yandex.ru'
             new_decision.save()
