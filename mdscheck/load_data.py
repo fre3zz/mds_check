@@ -10,7 +10,7 @@ django.setup()
 from mdscheck.models import MdsModel, Decision
 
 
-data = load_workbook('../data.xlsx')
+data = load_workbook('data.xlsx')
 sheet = data['Лист1']
 data_dict = dict()
 # Создаем словарь вида {x (номер кейса, не айди): ['y1' - экспертные данные,'y2','y3']
