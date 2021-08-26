@@ -1,21 +1,24 @@
 {% extends 'mdscheck/base.html' %}
 {% block content %}
-    <div class="mt-4 row justify-content-center">
-        <a class="btn btn-success btn-lg" href="{% url 'mds_check:random_mds_case'%}" role="button">Начать</a>
-        <a class="btn btn-success btn-lg" href="{% url 'mds_check:about' %}">Подробнее</a>
+    <div class="mt-4" align="center">
+            <h2 align="center">Знаете, что нужно делать и готовы начать?</h2>
+            <a class="btn btn-outline-success btn-lg" href="{% url 'mds_check:random_mds_case'%}" role="button" >Начать</a>
+            <h2 class = 'mt-4'>Или хотите ознакомиться с теоретической частью? Тогда, нажимайте</h2>
+            <a class="btn btn-outline-success btn-lg" href="{% url 'mds_check:about' %}">Подробнее</a>
     </div>
 {% endblock %}
 {% block comments %}
     <div class="overflow-auto m-2 border border-info rounded", style="height: 90vh">
-
+        {% if decisions %}
+            <h4 class="mt-2" align="center">последние ответы:</h4>
         {% for decision in decisions %}
             <div class="alert alert-success m-2" role="alert">
-        <p class="m-0">{{ decision.posted_date }}</p>
-        <p class="m-0">{{ decision.responder_email }}</p>
-        <p class="m-0">{{ decision.get_decision_display }}</p>
-        <p class="m-0">{{ decision.image.get_name_display }} of {{ decision.image.case.number }}</p>
+        <p class="m-0">{{ decision.posted_date|date:"d E H:i" }} {{ decision.responder_email }}:</p>
+                <p class="m-0">В кейсе №{{ decision.image.case.number }}</p>
+                <p class="m-0">Паттерн {{ decision.image.get_name_display }} {{ decision.get_decision_display }}</p>
             </div>
         {% endfor %}
+        {% endif %}
 
     </div>
 {% endblock %}

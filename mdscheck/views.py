@@ -68,7 +68,7 @@ class RandomMdsCaseView(View):
         file_number = os.path.basename(random_case.pdf_file.name).split('-')[0]
 
         # 5 случайных доноров - для показа в карусели
-        random_donors = random.sample(set(cases.filter(is_donor=True)), 3)
+        random_donors = random.sample(set(cases.filter(is_donor=True)), 5)
 
         context = {
             'form': form,

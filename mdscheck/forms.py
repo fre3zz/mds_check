@@ -22,8 +22,11 @@ class PatternCheck(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = helper.FormHelper()
-        self.helper.field_class = 'ml-4'
+
+        self.helper.field_class = 'ml-4 text-left'
         self.helper.label_class = 'ml-4'
+
+
 
     case_id = forms.IntegerField(widget=forms.HiddenInput())
     is_normal_cd13cd11b = forms.ChoiceField(
