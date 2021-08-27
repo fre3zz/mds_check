@@ -7,28 +7,19 @@
     <form method="post">
         {% csrf_token %}
         {{ form.case_id }}
-        <div class="d-flex align-items-stretch">
-
-            <div class="card mx-3 col-4" >
+        <div class="d-flex align-items-stretch" >
+            <div class="card mx-3 col-4" align="center">
                 <img src="{{ cd13_cd11b.image }}", alt="1", width="85%">
                 {{ form.is_normal_cd13cd11b|as_crispy_field }}
             </div>
-
-
-            <div class="card mx-3 col-4">
+            <div class="card mx-3 col-4" align="center">
                 <img src="{{ cd13_cd16.image }}", alt="1", width="85%">
                 {{ form.is_normal_cd13cd16|as_crispy_field }}
             </div>
-
-
             <div class="card mx-3 col-4"  align="center">
                 <img src="{{ cd11b_cd16.image }}", alt="1", width="85%">
-                <div class="col-8" align="center">
                 {{ form.is_normal_cd11bcd16|as_crispy_field }}
-                </div>
             </div>
-
-
             </div>
     <div align="center">
             <input type="submit" class="btn btn-success mt-4 mb-2" value="Перейти к следующему" >

@@ -23,7 +23,7 @@ class PatternCheck(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = helper.FormHelper()
 
-        self.helper.field_class = 'ml-4 text-left'
+        self.helper.field_class = 'ml-2 text-left'
         self.helper.label_class = 'ml-4'
 
 
