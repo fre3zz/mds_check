@@ -32,6 +32,7 @@ class EmailEnterView(View):
         context = {
             'form': form
         }
+        print(request.META.get('HTTP_REFERER'))
         return render(request, template_name='mdscheck/emailform.html', context=context)
 
     def post(self, request):
