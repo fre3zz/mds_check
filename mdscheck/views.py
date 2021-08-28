@@ -1,7 +1,7 @@
 import os
 import random
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from django.urls import reverse, reverse_lazy
@@ -26,13 +26,14 @@ class EmailEnterView(View):
         try:  # Проверка на наличие значений почты и опыта в словаре request.session
             email = request.session['email']
             experience = request.session['experience']
-            form = EmailForm(initial={'email': email, 'experience': experience})
+            form = EmailForm(initial={'email': email, 'experience': experience, 'prev_url': request.META.get('HTTP_REFERER')})
         except KeyError:  # Если значения удалили или их нет, то выдает пустую форму
-            form = EmailForm(initial={"experience": 'nov'})
+            form = EmailForm(initial={"experience": 'nov', 'prev_url': request.META.get('HTTP_REFERER')})
+
+
         context = {
             'form': form
         }
-        print(request.META.get('HTTP_REFERER'))
         return render(request, template_name='mdscheck/emailform.html', context=context)
 
     def post(self, request):
@@ -41,7 +42,8 @@ class EmailEnterView(View):
             data = posted_form.cleaned_data
             request.session['email'] = data['email']
             request.session['experience'] = data['experience']
-        return redirect(reverse('mds_check:index'))
+
+        return HttpResponseRedirect(data['prev_url'])
 
 
 def logoutview(request):

@@ -12,15 +12,15 @@
                 {% for decision in image.decisions.all %}
                     {% if decision.is_expert %}
                         <div class="order-0" align="center">
-                        <p class="m-1">Expert : {{ decision.get_decision_display }}</p>
+                        <p class="m-1">Эксперт: {{ decision.get_decision_display }}</p>
                         </div>
                         {% else %}
                         <div align="center">
                             <p class="m-1">
                                 {% if decision.responder_email == request.session.email %}
-                                    You:
+                                    Ваш ответ:
                                 {% else %}
-                                Not expert:
+                                Другой участник:
                                 {% endif %}
                                     {{ decision.get_decision_display }}
                             </p>

@@ -11,9 +11,10 @@ class EmailForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = helper.FormHelper()
         self.helper.form_method = 'post'
-        self.helper.add_input(Submit('submit', 'Submit', css_class='btn btn-success btn-block mt-4'))
+        self.helper.add_input(Submit('submit', 'Продолжить', css_class='btn btn-success btn-block mt-4'))
     email = forms.EmailField()
     experience = forms.ChoiceField(choices=RESPONDER)
+    prev_url = forms.CharField(widget=forms.HiddenInput())
 
 
 class PatternCheck(forms.Form):
