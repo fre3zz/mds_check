@@ -17,18 +17,18 @@ IS_DONOR = (
 
 # Варианты ответов
 DECISIONS = [
-        ('pos', 'abnormal'),
-        ('neg', 'normal'),
-        ('na', 'no idea'),
-        ('pnh', 'PNH'),
+        ('pos', 'Аномальный'),
+        ('neg', 'Нормальный'),
+        ('na', 'Не знаю'),
+        ('pnh', 'ПНГ-клон'),
     ]
 
 # Статус отвечающего
 RESPONDER = (
-        ('exp', 'expert'),
-        ('bio', 'biologist'),
-        ('md', 'doctor'),
-        ('nov', 'novice'),
+        ('exp', 'Эксперт-цитометрист'),
+        ('bio', 'Биолог'),
+        ('md', 'Врач'),
+        ('nov', 'Новичек'),
     )
 
 

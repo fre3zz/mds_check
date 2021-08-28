@@ -12,7 +12,6 @@ class EmailForm(forms.Form):
         self.helper = helper.FormHelper()
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Submit', css_class='btn btn-success btn-block mt-4'))
-
     email = forms.EmailField()
     experience = forms.ChoiceField(choices=RESPONDER)
 
@@ -22,11 +21,8 @@ class PatternCheck(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = helper.FormHelper()
-
         self.helper.field_class = 'ml-2 text-left'
         self.helper.label_class = 'ml-4'
-
-
 
     case_id = forms.IntegerField(widget=forms.HiddenInput())
     is_normal_cd13cd11b = forms.ChoiceField(

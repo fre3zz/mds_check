@@ -14,6 +14,6 @@ urlpatterns = [
     path('logout/', logoutview, name='logout'),
     path('mdscase/', RandomMdsCaseView.as_view(), name='random_mds_case'),
     path('case_search/', SearchView.as_view(), name='search'),
-    path('case_search/<int:case_pk>', MdsCaseView.as_view(), name='mds_case'),
+    path('case_search/<int:case_number>', MdsCaseView.as_view(), name='mds_case'),
     path('', IndexView.as_view(), name='index'),
 ]

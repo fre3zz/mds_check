@@ -13,7 +13,7 @@
             <h4 class="mt-2" align="center">последние ответы:</h4>
         {% for decision in decisions %}
             <div class="alert alert-success m-2" role="alert">
-        <p class="m-0">{{ decision.posted_date|date:"d E H:i" }} {{ decision.responder_email }}:</p>
+                <p class="m-0">{{ decision.posted_date|date:"d E H:i" }} {{ decision.responder_email }}:</p>
                 <p class="m-0">В кейсе №{{ decision.image.case.number }}</p>
                 <p class="m-0">Паттерн {{ decision.image.get_name_display }} {{ decision.get_decision_display }}</p>
             </div>

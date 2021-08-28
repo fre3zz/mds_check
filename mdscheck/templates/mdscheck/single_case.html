@@ -1,3 +1,35 @@
-{% extends base.html %}
+{% extends 'mdscheck/base.html' %}
 {% block content %}
+    <h2 class="mt-4" align="center">{{ case.number }}</h2>
+<div class="row justify-content-center">
+
+    {% for image in case.images.all %}
+
+        <div class="col-3 m-2">
+            <div>
+                <img src="{{ image.image }}" width="100%">
+                <div class="d-flex flex-column">
+                {% for decision in image.decisions.all %}
+                    {% if decision.is_expert %}
+                        <div class="order-0" align="center">
+                        <p class="m-1">Expert : {{ decision.get_decision_display }}</p>
+                        </div>
+                        {% else %}
+                        <div align="center">
+                            <p class="m-1">
+                                {% if decision.responder_email == request.session.email %}
+                                    You:
+                                {% else %}
+                                Not expert:
+                                {% endif %}
+                                    {{ decision.get_decision_display }}
+                            </p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}
