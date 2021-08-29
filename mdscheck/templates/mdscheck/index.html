@@ -12,8 +12,9 @@
     </div>
 {% endblock %}
 {% block comments %}
+{% if decisions %}
     <div class="overflow-auto m-2 border border-info rounded", style="height: 90vh">
-        {% if decisions %}
+
             <h4 class="mt-2" align="center">Последние ответы:</h4>
         {% for decision in decisions %}
             <div class="alert alert-success m-2" role="alert">
@@ -22,7 +23,8 @@
                 <p class="m-0">Паттерн {{ decision.image.get_name_display }} {{ decision.get_decision_display }}</p>
             </div>
         {% endfor %}
-        {% endif %}
+
 
     </div>
+{% endif %}
 {% endblock %}
