@@ -42,8 +42,10 @@ class EmailEnterView(View):
             data = posted_form.cleaned_data
             request.session['email'] = data['email']
             request.session['experience'] = data['experience']
+            return HttpResponseRedirect(data['prev_url'])
+        else:
+            return render(request, template_name='mdscheck/emailform.html', context={'form': posted_form})
 
-        return HttpResponseRedirect(data['prev_url'])
 
 
 def logoutview(request):
