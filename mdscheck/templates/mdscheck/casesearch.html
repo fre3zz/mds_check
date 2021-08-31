@@ -12,7 +12,7 @@
         <div class="mt-4" align="center">
             <h1>Есть такие кейсы:</h1>
             {% for case in cases %}
-                <a href="{% url 'mds_check:mds_case' case.id %}" class="col-1">{{ case.number }}</a>
+                <a href="{% url 'mds_check:mds_case' case.number %}" class="col-1">{{ case.number }}</a>
             {% endfor %}
         </div>
     </div>
