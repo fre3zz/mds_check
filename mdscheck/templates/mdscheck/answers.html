@@ -1,7 +1,11 @@
 {% extends 'mdscheck/base.html' %}
 {% block content %}
     <div class="mt-4">
-    <h2 align="center">Всего ответов: {{ total }}. Правильных: {{ right_decisions }} ({{ percent|floatformat:'1' }}%)</h2>
+    {% if total %}
+        <h2 align="center">Всего ответов: {{ total }}. Правильных: {{ right_decisions }} ({{ percent|floatformat:'1' }}%)</h2>
+    {% else %}
+        <h2 align="center">Пока не было ответов.</h2>
+    {% endif %}
     <hr>
     {% for case_decision in decision_list %}
         <div class='my-3' align="center">

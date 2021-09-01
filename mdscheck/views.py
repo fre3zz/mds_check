@@ -204,6 +204,8 @@ class AnswersView(View):
                     right_decisions += 1
                 elem['decisions'].append({'decision': decision, 'expert_decision': None})
 
+        percent = 0
+
         return render(request, template_name=self.template_name, context={'decision_list': decisions_list,
                                                                           'total': total_decisions,
                                                                           'right_decisions': right_decisions,
