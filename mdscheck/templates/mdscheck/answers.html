@@ -1,0 +1,34 @@
+{% extends 'mdscheck/base.html' %}
+{% block content %}
+    <div class="mt-4">
+    <h2 align="center">Всего ответов: {{ total }}. Правильных: {{ right_decisions }} ({{ percent|floatformat:'1' }}%)</h2>
+    <hr>
+    {% for case_decision in decision_list %}
+        <div class='my-3' align="center">
+        <a href="{{ case_decision.case.get_absolute_url }}">Кейс № {{ case_decision.case.number }}</a>
+        {% if case_decision.case.is_donor %}
+            (Донор)
+            {% else %}
+            (Пациент)
+        {% endif %}
+        </div>
+        <div class="row justify-content-center">
+        {% for decision in case_decision.decisions %}
+
+            {% if decision.decision.decision == decision.expert_decision.decision %}
+            <div class="alert alert-success col-3 mx-2">Паттерн {{ decision.decision.image.get_name_display }} - {{ decision.decision.get_decision_display }}</div>
+            {% elif not decision.expert_decision %}
+                {% if decision.decision.decision == 'neg' %}
+                    <div class="alert alert-success col-3 mx-2">Паттерн {{ decision.decision.image.get_name_display }} - {{ decision.decision.get_decision_display }}</div>
+                    {% else %}
+                    <div class="alert alert-danger col-3 mx-2"><p class="my-0">Паттерн {{ decision.decision.image.get_name_display }} - Нормальный.</p> <p class="my-0">Вы ответили: {{ decision.decision.get_decision_display }}</p></div>
+                    {% endif %}
+            {% else %}
+                <div class="alert alert-danger col-3 mx-2"><p class="my-0">Паттерн {{ decision.decision.image.get_name_display }} - {{ decision.expert_decision.get_decision_display }}.</p> <p class="my-0">Вы ответили: {{ decision.decision.get_decision_display }}</p></div>
+            {% endif %}
+        {% endfor %}
+        </div>
+        <hr>
+    {% endfor %}
+    </div>
+{% endblock %}

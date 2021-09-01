@@ -1,6 +1,7 @@
 import os
 import random
 
+import requests
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
@@ -54,7 +55,7 @@ def logoutview(request):
         del request.session['experience']
     except KeyError:
         print('Key error')
-    return render(request, template_name='mdscheck/logout.html')
+    return redirect(reverse('mds_check:index'))
 
 
 class RandomMdsCaseView(View):
@@ -163,4 +164,49 @@ class MdsCaseView(View):
             return render(request, template_name=self.no_case_template_name, context={'number': case_number})
 
 
+class AnswersView(View):
+    template_name = 'mdscheck/answers.html'
 
+    def get(self, request):
+        try:
+            email = request.session['email']
+        except KeyError:
+            return redirect(reverse('mds_check:email_form'))
+
+        # получение Query с ответами от полученного эмейла
+        decisions = Decision.objects.filter(is_expert=False, responder_email=email).order_by('-posted_date')
+        # Переменные для подсчета статистики
+        total_decisions = len(decisions)
+        right_decisions = 0
+        decisions_list = list()
+        case_number = ""
+
+        """ 
+        создание сложного списка со словарями для передачи в темплэйт
+        [{'case': MdsModel, 'decisions':[{'decision': Decision, 'expert_decision': Decision}, {}, {}]}, {}, ]
+        """
+        for decision in decisions:
+            mds_case = decision.image.case
+            mds_case_number = mds_case.number
+            if mds_case_number != case_number:
+                elem = dict()
+                decisions_list.append(elem)
+                elem['case'] = mds_case
+                case_number = mds_case_number
+                elem['decisions'] = list()
+            try:
+                expert_decision = Decision.objects.get(is_expert=True, image_id=decision.image_id)
+                if expert_decision.decision == decision.decision:
+                    right_decisions += 1
+                elem['decisions'].append({'decision': decision, 'expert_decision': expert_decision})
+            except (Decision.MultipleObjectsReturned, Decision.DoesNotExist):
+                if decision.decision == 'neg':
+                    right_decisions += 1
+                elem['decisions'].append({'decision': decision, 'expert_decision': None})
+
+        return render(request, template_name=self.template_name, context={'decision_list': decisions_list,
+                                                                          'total': total_decisions,
+                                                                          'right_decisions': right_decisions,
+                                                                          'percent': 100*right_decisions/total_decisions
+                                                                          }
+                      )
