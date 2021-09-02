@@ -203,12 +203,14 @@ class AnswersView(View):
                 if decision.decision == 'neg':
                     right_decisions += 1
                 elem['decisions'].append({'decision': decision, 'expert_decision': None})
-
         percent = 0
-
+        try:
+            percent = 100 * right_decisions / total_decisions
+        except ValueError:
+            pass
         return render(request, template_name=self.template_name, context={'decision_list': decisions_list,
                                                                           'total': total_decisions,
                                                                           'right_decisions': right_decisions,
-                                                                          'percent': 100*right_decisions/total_decisions
+                                                                          'percent': percent
                                                                           }
                       )
