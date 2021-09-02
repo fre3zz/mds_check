@@ -168,11 +168,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Google
-
+"""
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
     "google-credentials.json"
 )
-
+"""
 # Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -180,7 +180,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # new!
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # for heroku deploy
 django_heroku.settings(locals())
