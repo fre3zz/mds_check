@@ -206,7 +206,7 @@ class AnswersView(View):
         percent = 0
         try:
             percent = 100 * right_decisions / total_decisions
-        except ValueError:
+        except ZeroDivisionError:
             pass
         return render(request, template_name=self.template_name, context={'decision_list': decisions_list,
                                                                           'total': total_decisions,
