@@ -2,6 +2,7 @@ import os
 import random
 
 import requests
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
@@ -19,8 +20,33 @@ class IndexView(View):
         context = {'decisions': decisions}
         return render(request, template_name='mdscheck/index.html', context=context)
 
-
 class EmailEnterView(View):
+    def get(self, request):
+
+        try:  # Проверка на наличие значений почты и опыта в словаре request.session
+            email = request.session['email']
+            experience = request.session['experience']
+            form = EmailForm(
+                initial={'email': email, 'experience': experience, 'prev_url': request.META.get('HTTP_REFERER')})
+        except KeyError:  # Если значения удалили или их нет, то выдает пустую форму
+            form = EmailForm(initial={"experience": 'nov', 'prev_url': request.META.get('HTTP_REFERER')})
+
+        context = {
+            'form': form
+        }
+        return render(request, template_name='mdscheck/emailform.html', context=context)
+
+    def post(self, request):
+        posted_form = EmailForm(request.POST)
+        if posted_form.is_valid():
+            data = posted_form.cleaned_data
+            request.session['email'] = data['email']
+            request.session['experience'] = data['experience']
+            return HttpResponseRedirect(reverse("mds_check:random_mds_case"))
+        else:
+            return render(request, template_name='mdscheck/emailform.html', context={'form': posted_form})
+
+class EmailChangeView(View):
     # Вью для формы ввода почты
     def get(self, request):
 
@@ -68,7 +94,7 @@ class RandomMdsCaseView(View):
         random_case = random.choice(cases)
         images = Images.objects.filter(case=random_case)
 
-        form = PatternCheck(initial={'case_id': random_case.id, })
+        form = PatternCheck(initial={'case_id': random_case.id})
 
         # номер файла - он в начале названия pdf файла, до '-'
         file_number = os.path.basename(random_case.pdf_file.name).split('-')[0]
@@ -76,6 +102,10 @@ class RandomMdsCaseView(View):
         # 5 случайных доноров - для показа в карусели
         random_donors = random.sample(set(cases.filter(is_donor=True)), 5)
 
+        if str(request.META.get('HTTP_REFERER')).endswith(reverse('mds_check:random_mds_case')):
+            request.session['count'] = int(request.session['count']) + 1
+        else:
+            request.session['count'] = 1
         context = {
             'form': form,
             'cd13_cd11b': images[0],
@@ -120,6 +150,13 @@ class RandomMdsCaseView(View):
                 decision.responder_email = request.session['email']
                 decision.save()
 
+        try:
+            if request.session['count'] % 10 == 0:
+                print(1)
+                return redirect(reverse('mds_check:continue'))
+        except KeyError:
+            pass
+
         return redirect(reverse('mds_check:random_mds_case'))
 
 
@@ -149,6 +186,9 @@ class SearchView(View):
 
 def aboutview(request):
     return render(request, template_name='mdscheck/about.html')
+
+def continueview(request):
+    return render(request, template_name="mdscheck/continue.html")
 
 
 class MdsCaseView(View):
@@ -204,13 +244,23 @@ class AnswersView(View):
                     right_decisions += 1
                 elem['decisions'].append({'decision': decision, 'expert_decision': None})
         percent = 0
+        paginator = Paginator(decisions_list, 10)
+        page = request.GET.get('page')
+        try:
+            page_decisions = paginator.page(page)
+        except PageNotAnInteger:
+            page_decisions = paginator.page(1)
+        except EmptyPage:
+            page_decisions = paginator.page(paginator.num_pages)
+
         try:
             percent = 100 * right_decisions / total_decisions
         except ZeroDivisionError:
             pass
-        return render(request, template_name=self.template_name, context={'decision_list': decisions_list,
+        return render(request, template_name=self.template_name, context={'decision_list': page_decisions,
                                                                           'total': total_decisions,
                                                                           'right_decisions': right_decisions,
-                                                                          'percent': percent
+                                                                          'percent': percent,
+                                                                          'page': page
                                                                           }
                       )

@@ -31,13 +31,14 @@
                   </button>
                   <div class="dropdown-menu dropdown-menu-right mt-3">
                       <a href="{% url 'mds_check:stats' %}" class="dropdown-item py-2 m-0">Результаты</a>
-                      <a href="{% url 'mds_check:email_form' %}" class="dropdown-item py-2 m-0">Сменить</a>
+                      <a href="{% url 'mds_check:email_change' %}" class="dropdown-item py-2 m-0">Сменить</a>
                       <a href="{% url 'mds_check:logout' %}" class="dropdown-item py-2 m-0">Выйти</a>
                   </div>
               </div>
                     {% else %}
-
-                        <a class="nav-link" href="{% url 'mds_check:email_form' %}">Войти</a>
+                        {% url 'mds_check:email_change' as change  %}
+                        {% url 'mds_check:email_form' as email_form %}
+                        <a class="nav-link {% if request.path == change or request.path == email_form %}disabled{% endif %}" href="{% url 'mds_check:email_change' %}">Войти</a>
 
                   {% endif %}
           </li>

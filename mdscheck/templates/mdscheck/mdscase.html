@@ -1,11 +1,12 @@
 {% extends 'mdscheck/base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <h2 style = "text-align: center; margin-top: 40px; margin-bottom: 30px">#{{ number }}</h2>
+    <h1 style = "text-align: center; margin-top: 40px; margin-bottom: 30px">#{{ number }} </h1>
     <div class="row mt-3 justify-content-center">
 
     <form method="post">
         {% csrf_token %}
+
         {{ form.case_id }}
         <div class="d-flex align-items-stretch" >
             <div class="card mx-3 col-4" align="center">
@@ -56,4 +57,5 @@
 </div>
 {% endblock %}
 {% block comments %}
+    <h2 class="m-4" align="center">{{ request.session.count }} из 10</h2>
 {% endblock %}

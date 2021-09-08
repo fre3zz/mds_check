@@ -1,0 +1,8 @@
+{% extends 'mdscheck/base.html' %}
+{% block content %}
+    <div class="container">
+    <h2 class = "m-4" align="center">Вы ответили на 10 вопросов.</h2>
+        <h3 align="center">Вы можете <a class="btn btn-outline-success btn-lg mb-1" href="{% url 'mds_check:random_mds_case' %}">продолжить</a> </h3> <hr>
+        <h3 align="center">Или посмотреть Ваши <a class="btn btn-outline-success btn-lg mb-1" href="{% url 'mds_check:stats' %}">результаты</a> </h3>
+    </div>
+{% endblock %}
