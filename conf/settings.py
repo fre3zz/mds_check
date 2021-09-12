@@ -14,7 +14,8 @@ from pathlib import Path
 
 import dj_database_url
 import django_heroku
-from google.oauth2 import service_account
+
+# from google.oauth2 import service_account
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,9 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure--0d8odc74q&weuifvga8%nsfsuetd+p0_qz1!nynp(3d#bqlby'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*','.herokuapp.com']
+ALLOWED_HOSTS = ['*', '.herokuapp.com']
 
 # for debug
 INTERNAL_IPS = [

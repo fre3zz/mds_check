@@ -36,7 +36,7 @@
         </div>
         <hr>
     {% endfor %}
-    {% if total %}
+    {% if total and decision_list.paginator %}
     <div class="container">
     <div class="row justify-content-center">
     <nav aria-label="Page navigation example">
@@ -59,6 +59,15 @@
     </nav>
     </div>
     </div>
+    {% endif %}
+    {% if total and not decision_list.paginator %}
+        <div align="center">
+        <h2 align="center">Хотите посмотреть еще картинки? </h2>
+        <a class="btn btn-outline-success" href="{% url 'mds_check:random_mds_case' %}">Продолжить</a>
+            <hr>
+        <h2>Или посмотреть всю статистику</h2>
+        <a class="btn btn-outline-success" href="{% url 'mds_check:stats' %}">Статистика</a>
+        </div>
     {% endif %}
     </div>
 {% endblock %}

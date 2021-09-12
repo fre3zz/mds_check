@@ -54,7 +54,3 @@ for mds_case in mds_cases:
             new_decision.responder = 'exp'
             new_decision.responder_email = 'k0jl9ih@yandex.ru'
             new_decision.save()
-
-
-
-

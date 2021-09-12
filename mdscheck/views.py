@@ -1,12 +1,11 @@
 import os
 import random
 
-import requests
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.views import View
 
 from .forms import EmailForm, PatternCheck, SearchForm
@@ -19,6 +18,7 @@ class IndexView(View):
         decisions = Decision.objects.filter(is_expert=False).order_by('-posted_date')[:15]
         context = {'decisions': decisions}
         return render(request, template_name='mdscheck/index.html', context=context)
+
 
 class EmailEnterView(View):
     def get(self, request):
@@ -46,6 +46,7 @@ class EmailEnterView(View):
         else:
             return render(request, template_name='mdscheck/emailform.html', context={'form': posted_form})
 
+
 class EmailChangeView(View):
     # Вью для формы ввода почты
     def get(self, request):
@@ -53,10 +54,12 @@ class EmailChangeView(View):
         try:  # Проверка на наличие значений почты и опыта в словаре request.session
             email = request.session['email']
             experience = request.session['experience']
-            form = EmailForm(initial={'email': email, 'experience': experience, 'prev_url': request.META.get('HTTP_REFERER')})
+            form = EmailForm(initial={'email': email,
+                                      'experience': experience,
+                                      'prev_url': request.META.get('HTTP_REFERER')}
+                             )
         except KeyError:  # Если значения удалили или их нет, то выдает пустую форму
             form = EmailForm(initial={"experience": 'nov', 'prev_url': request.META.get('HTTP_REFERER')})
-
 
         context = {
             'form': form
@@ -72,7 +75,6 @@ class EmailChangeView(View):
             return HttpResponseRedirect(data['prev_url'])
         else:
             return render(request, template_name='mdscheck/emailform.html', context={'form': posted_form})
-
 
 
 def logoutview(request):
@@ -152,7 +154,7 @@ class RandomMdsCaseView(View):
 
         try:
             if request.session['count'] % 10 == 0:
-                print(1)
+                request.session['count'] += 1
                 return redirect(reverse('mds_check:continue'))
         except KeyError:
             pass
@@ -187,6 +189,7 @@ class SearchView(View):
 def aboutview(request):
     return render(request, template_name='mdscheck/about.html')
 
+
 def continueview(request):
     return render(request, template_name="mdscheck/continue.html")
 
@@ -204,6 +207,53 @@ class MdsCaseView(View):
             return render(request, template_name=self.no_case_template_name, context={'number': case_number})
 
 
+def list_of_decisions(email, number=None):
+    if number == 0:
+        decisions = Decision.objects.filter(is_expert=False, responder_email=email).order_by('-posted_date')[:3]
+    elif number:
+        decisions = Decision.objects.filter(is_expert=False, responder_email=email).order_by('-posted_date')[:number]
+    else:
+        decisions = Decision.objects.filter(is_expert=False, responder_email=email).order_by('-posted_date')
+
+    total_decisions = len(decisions)
+    right_decisions = 0
+    decisions_list = list()
+    case_number = ""
+    """
+    создание сложного списка со словарями для передачи в темплэйт
+    [{'case': MdsModel, 'decisions':[{'decision': Decision, 'expert_decision': Decision}, {}, {}]}, {}, ]
+    """
+    for decision in decisions:
+        mds_case = decision.image.case
+        mds_case_number = mds_case.number
+        if mds_case_number != case_number:
+            elem = dict()
+            decisions_list.append(elem)
+            elem['case'] = mds_case
+            case_number = mds_case_number
+            elem['decisions'] = list()
+        try:
+            expert_decision = Decision.objects.get(is_expert=True, image_id=decision.image_id)
+            if expert_decision.decision == decision.decision:
+                right_decisions += 1
+            elem['decisions'].append({'decision': decision, 'expert_decision': expert_decision})
+        except (Decision.MultipleObjectsReturned, Decision.DoesNotExist):
+            if decision.decision == 'neg':
+                right_decisions += 1
+            elem['decisions'].append({'decision': decision, 'expert_decision': None})
+
+    percent = 0
+    try:
+        percent = 100 * right_decisions / total_decisions
+    except ZeroDivisionError:
+        pass
+    print(decisions_list)
+    context = {'decision_list': decisions_list, 'total': total_decisions, 'right_decisions': right_decisions,
+               'percent': percent}
+
+    return context
+
+
 class AnswersView(View):
     template_name = 'mdscheck/answers.html'
 
@@ -213,38 +263,9 @@ class AnswersView(View):
         except KeyError:
             return redirect(reverse('mds_check:email_form'))
 
-        # получение Query с ответами от полученного эмейла
-        decisions = Decision.objects.filter(is_expert=False, responder_email=email).order_by('-posted_date')
-        # Переменные для подсчета статистики
-        total_decisions = len(decisions)
-        right_decisions = 0
-        decisions_list = list()
-        case_number = ""
+        context = list_of_decisions(email)
 
-        """ 
-        создание сложного списка со словарями для передачи в темплэйт
-        [{'case': MdsModel, 'decisions':[{'decision': Decision, 'expert_decision': Decision}, {}, {}]}, {}, ]
-        """
-        for decision in decisions:
-            mds_case = decision.image.case
-            mds_case_number = mds_case.number
-            if mds_case_number != case_number:
-                elem = dict()
-                decisions_list.append(elem)
-                elem['case'] = mds_case
-                case_number = mds_case_number
-                elem['decisions'] = list()
-            try:
-                expert_decision = Decision.objects.get(is_expert=True, image_id=decision.image_id)
-                if expert_decision.decision == decision.decision:
-                    right_decisions += 1
-                elem['decisions'].append({'decision': decision, 'expert_decision': expert_decision})
-            except (Decision.MultipleObjectsReturned, Decision.DoesNotExist):
-                if decision.decision == 'neg':
-                    right_decisions += 1
-                elem['decisions'].append({'decision': decision, 'expert_decision': None})
-        percent = 0
-        paginator = Paginator(decisions_list, 10)
+        paginator = Paginator(context['decision_list'], 10)
         page = request.GET.get('page')
         try:
             page_decisions = paginator.page(page)
@@ -253,14 +274,20 @@ class AnswersView(View):
         except EmptyPage:
             page_decisions = paginator.page(paginator.num_pages)
 
+        context['decision_list'] = page_decisions
+        context['page'] = page
+        return render(request, template_name=self.template_name, context=context)
+
+
+class LastAnswersView(View):
+    template_name = 'mdscheck/answers.html'
+
+    def get(self, request):
         try:
-            percent = 100 * right_decisions / total_decisions
-        except ZeroDivisionError:
-            pass
-        return render(request, template_name=self.template_name, context={'decision_list': page_decisions,
-                                                                          'total': total_decisions,
-                                                                          'right_decisions': right_decisions,
-                                                                          'percent': percent,
-                                                                          'page': page
-                                                                          }
-                      )
+            email = request.session['email']
+        except KeyError:
+            return redirect(reverse('mds_check:email_form'))
+
+        context = list_of_decisions(email, number=(int(request.session.get('count'))-1)*3)
+
+        return render(request, template_name=self.template_name, context=context)

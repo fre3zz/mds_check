@@ -1,7 +1,7 @@
 from django.urls import path
 
 from mdscheck.views import IndexView, logoutview, RandomMdsCaseView, SearchView, MdsCaseView, aboutview, AnswersView, \
-    EmailChangeView, EmailEnterView, continueview
+    EmailChangeView, EmailEnterView, continueview, LastAnswersView
 
 app_name = 'mds_check'
 
@@ -15,5 +15,7 @@ urlpatterns = [
     path('case_search/<int:case_number>', MdsCaseView.as_view(), name='mds_case'),
     path('', IndexView.as_view(), name='index'),
     path('user/stats', AnswersView.as_view(), name='stats'),
-    path('continue/', continueview, name='continue')
+    path('user/stats/last', LastAnswersView.as_view(), name='last_stats'),
+    path('continue/', continueview, name='continue'),
+
 ]
