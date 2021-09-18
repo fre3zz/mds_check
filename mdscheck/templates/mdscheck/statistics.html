@@ -11,6 +11,7 @@
                     <div class="col-3">
                     <p align="center">{{ image.get_name_display }}</p>
                     <img src="{{ image.image }}" width="100%">
+                        <p class="m-1" align="center">Паттерн - {% if image.expert == 'neg' %}Нормальный{% else %}Аномальный{% endif %}</p>
                         <p class="m-1" align="center">Правильных ответов:</p>
                     <p class="m-1" align="center">{{ image.right }} / {{ image.tot }} ({{ image.percent }}%)</p>
                     </div>

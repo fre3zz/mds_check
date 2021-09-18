@@ -322,7 +322,8 @@ class StatisticsView(View):
                         filter=Q(decisions__is_expert=False) & Q(decisions__decision=Subquery(expert_decisions.values('decision'))))),
                        default=Count('decisions', filter=Q(decisions__is_expert=False) & Q(decisions__decision='neg'))),
             tot=Count('decisions', filter=Q(decisions__is_expert=False)),
-            percent=Case(When(tot=0, then=float('0')), default=Round(ExpressionWrapper(F('right') * Decimal('100.0')/F('tot'), output_field=FloatField(max_length=4))))
+            percent=Case(When(tot=0, then=float('0')), default=Round(ExpressionWrapper(F('right') * Decimal('100.0')/F('tot'), output_field=FloatField(max_length=4)))),
+            expert=Decision.objects.filter(image=OuterRef('pk'), is_expert=True).values('decision')
         )
         cases = MdsModel.objects.all().order_by('number').prefetch_related(Prefetch('images', queryset=images, to_attr='images_with_decisions'))
 
