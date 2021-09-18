@@ -1,13 +1,17 @@
 import os
 import random
+from decimal import Decimal
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import models
+from django.db.models import Count, Q, OuterRef, Subquery, Prefetch, F, Exists, FloatField, ExpressionWrapper, \
+    DecimalField, Func
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from django.urls import reverse
 from django.views import View
-
+from django.db.models import Case, When
 from .forms import EmailForm, PatternCheck, SearchForm
 from .models import Images, MdsModel, Decision
 
@@ -15,7 +19,7 @@ from .models import Images, MdsModel, Decision
 class IndexView(View):
 
     def get(self, request):
-        decisions = Decision.objects.filter(is_expert=False).order_by('-posted_date')[:15]
+        decisions = Decision.objects.filter(is_expert=False).order_by('-posted_date').select_related('image__case')[:15]
         context = {'decisions': decisions}
         return render(request, template_name='mdscheck/index.html', context=context)
 
@@ -92,8 +96,8 @@ class RandomMdsCaseView(View):
     def get(self, request):
         if not request.session.get('email'):
             return redirect(reverse('mds_check:email_form'))
-        cases = MdsModel.objects.all()
-        random_case = random.choice(cases)
+        cases = MdsModel.objects.all().annotate(decisions_count=Count('images__decisions')).order_by('decisions_count')
+        random_case = random.choice(cases[:10])
         images = Images.objects.filter(case=random_case)
 
         form = PatternCheck(initial={'case_id': random_case.id})
@@ -104,10 +108,13 @@ class RandomMdsCaseView(View):
         # 5 случайных доноров - для показа в карусели
         random_donors = random.sample(set(cases.filter(is_donor=True)), 5)
 
-        if str(request.META.get('HTTP_REFERER')).endswith(reverse('mds_check:random_mds_case')):
-            request.session['count'] = int(request.session['count']) + 1
-        else:
+        if not str(request.META.get('HTTP_REFERER')).endswith(reverse('mds_check:random_mds_case')):
             request.session['count'] = 1
+
+        if request.session['count'] > 10:
+            request.session['count'] -= 1
+
+
         context = {
             'form': form,
             'cd13_cd11b': images[0],
@@ -156,6 +163,9 @@ class RandomMdsCaseView(View):
             if request.session['count'] % 10 == 0:
                 request.session['count'] += 1
                 return redirect(reverse('mds_check:continue'))
+
+            request.session['count'] += 1
+
         except KeyError:
             pass
 
@@ -175,7 +185,7 @@ class SearchView(View):
         if search_form.is_valid():
             number = search_form.cleaned_data['case_number']
             try:
-                print(number)
+
                 case = MdsModel.objects.get(number=number)
                 return redirect(reverse('mds_check:mds_case', kwargs={'case_number': int(case.number)}))
             except (MdsModel.DoesNotExist, MdsModel.MultipleObjectsReturned):
@@ -201,19 +211,22 @@ class MdsCaseView(View):
     def get(self, request, case_number):
         try:
             case = MdsModel.objects.get(number=case_number)
-            context = {'case': case}
+            qs = Decision.objects.order_by('-is_expert')
+            images = case.images.prefetch_related(Prefetch('decisions', queryset=qs)).select_related('case')
+            context = {'case': case, 'images': images}
             return render(request, template_name=self.case_template_name, context=context)
         except (MdsModel.MultipleObjectsReturned, MdsModel.DoesNotExist):
             return render(request, template_name=self.no_case_template_name, context={'number': case_number})
 
 
 def list_of_decisions(email, number=None):
+    decisions = Decision.objects.select_related('image','image__case').all()
     if number == 0:
-        decisions = Decision.objects.filter(is_expert=False, responder_email=email).order_by('-posted_date')[:3]
+        decisions = decisions.filter(is_expert=False, responder_email=email).order_by('-posted_date')[:3]
     elif number:
-        decisions = Decision.objects.filter(is_expert=False, responder_email=email).order_by('-posted_date')[:number]
+        decisions = decisions.filter(is_expert=False, responder_email=email).order_by('-posted_date')[:number]
     else:
-        decisions = Decision.objects.filter(is_expert=False, responder_email=email).order_by('-posted_date')
+        decisions = decisions.filter(is_expert=False, responder_email=email).order_by('-posted_date')
 
     total_decisions = len(decisions)
     right_decisions = 0
@@ -247,7 +260,7 @@ def list_of_decisions(email, number=None):
         percent = 100 * right_decisions / total_decisions
     except ZeroDivisionError:
         pass
-    print(decisions_list)
+
     context = {'decision_list': decisions_list, 'total': total_decisions, 'right_decisions': right_decisions,
                'percent': percent}
 
@@ -291,3 +304,43 @@ class LastAnswersView(View):
         context = list_of_decisions(email, number=(int(request.session.get('count'))-1)*3)
 
         return render(request, template_name=self.template_name, context=context)
+
+
+
+class Round(Func):
+    function = "ROUND"
+    template = "%(function)s(%(expressions)s::numeric, 1)"
+
+
+class StatisticsView(View):
+
+    template = 'mdscheck/statistics.html'
+    def get(self, request):
+        expert_decisions = Decision.objects.filter(image=OuterRef('pk'), is_expert=True)
+        images = Images.objects.annotate(
+            right=Case(When(condition=Exists(expert_decisions.values('decision')), then=Count('decisions',
+                        filter=Q(decisions__is_expert=False) & Q(decisions__decision=Subquery(expert_decisions.values('decision'))))),
+                       default=Count('decisions', filter=Q(decisions__is_expert=False) & Q(decisions__decision='neg'))),
+            tot=Count('decisions', filter=Q(decisions__is_expert=False)),
+            percent=Case(When(tot=0, then=float('0')), default=Round(ExpressionWrapper(F('right') * Decimal('100.0')/F('tot'), output_field=FloatField(max_length=4))))
+        )
+        cases = MdsModel.objects.all().order_by('number').prefetch_related(Prefetch('images', queryset=images, to_attr='images_with_decisions'))
+
+
+        paginator = Paginator(cases, 10)
+        page = request.GET.get('page')
+        try:
+            page_cases = paginator.page(page)
+        except PageNotAnInteger:
+            page_cases = paginator.page(1)
+        except EmptyPage:
+            page_cases = paginator.page(paginator.num_pages)
+
+        context = {
+                    'cases': page_cases,
+                    'page': page
+                }
+
+        return render(request, template_name=self.template, context=context)
+
+

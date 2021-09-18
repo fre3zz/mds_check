@@ -1,0 +1,42 @@
+{% extends 'mdscheck/base.html' %}
+{% load static %}
+{% block content %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/pagination.css' %}">
+    {% for case in cases %}
+        <div class="container my-3 p-2" align="center">
+            <a href="{{case.get_absolute_url }}" >Кейс № {{ case.number }}</a>
+            <div class="row justify-content-center">
+                {% for image in case.images_with_decisions %}
+                    <div class="col-3">
+                    <p align="center">{{ image.get_name_display }}</p>
+                    <img src="{{ image.image }}" width="100%">
+                        <p class="m-1" align="center">Правильных ответов:</p>
+                    <p class="m-1" align="center">{{ image.right }} / {{ image.tot }} ({{ image.percent }}%)</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <hr>
+    {% endfor %}
+    <div class="row justify-content-center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            {% if cases.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ cases.previous_page_number }}">Предыдущая</a></li>
+            {% endif %}
+            {% for page in cases.paginator.page_range %}
+                {% if page == cases.number %}
+                    <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                {% endif %}
+
+            {% endfor %}
+            {% if cases.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ cases.next_page_number }}">Следующая</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    </div>
+{% endblock %}
